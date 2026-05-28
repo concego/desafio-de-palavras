@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desafio das Letras</title>
+  <style>
+    :root {
+      --cor-fundo: #f0f2f5;
+      --cor-letra: #2d3748;
+      --cor-botao: #ffffff;
+      --cor-borda: #cbd5e0;
+      --cor-sucesso: #48bb78;
+      --cor-primaria: #4299e1;
+      --cor-secundaria: #718096;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: var(--cor-fundo);
+      color: var(--cor-letra);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 16px;
+      box-sizing: border-box;
+    }
+
+    .tela {
+      display: none;
+      width: 100%;
+      max-width: 400px;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .ativa {
+      display: flex;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: var(--cor-primaria);
+      margin-bottom: 8px;
+    }
+
+    .creditos {
+      font-size: 0.9rem;
+      color: var(--cor-secundaria);
+      margin-bottom: 24px;
+    }
+
+    .creditos a {
+      color: var(--cor-primaria);
+      text-decoration: none;
+    }
+
+    .painel-topo {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .placar {
+      font-size: 1.4rem;
+      font-weight: bold;
+    }
+
+    .botoes-topo {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-icone {
+      background-color: var(--cor-botao);
+      border: 1px solid var(--cor-borda);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .feedback {
+      height: 24px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background-color: var(--cor-borda);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    td {
+      padding: 4px;
+      width: 25%;
+      height: 25%;
+    }
+
+    .peca {
+      width: 100%;
+      height: 100%;
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--cor-letra);
+      background-color: var(--cor-botao);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .vazio {
+      background-color: transparent;
+      box-shadow: none;
+      cursor: default;
+    }
+
+    .validada {
+      background-color: var(--cor-sucesso);
+      color: white;
+      transition: background-color 0.3s;
+    }
+
+    .menu-botoes {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .btn-principal {
+      width: 100%;
+      padding: 16px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: white;
+      background-color: var(--cor-primaria);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(66, 153, 225, 0.3);
+    }
+
+    .btn-secundario {
+      width: 100%;
+      padding: 14px;
+      font-size: 1rem;
+      font-weight: bold;
+      color: var(--cor-letra);
+      background-color: var(--cor-botao);
+      border: 1px solid var(--cor-borda);
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      box-sizing: border-box;
+      z-index: 10;
+    }
+
+    .modal-conteudo {
+      background-color: white;
+      padding: 24px;
+      border-radius: 12px;
+      max-width: 400px;
+      width: 100%;
+      text-align: left;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    .modal-conteudo h2 {
+      margin-top: 0;
+      color: var(--cor-primaria);
+    }
+
+    .modal-conteudo ul {
+      padding-left: 20px;
+      margin-bottom: 20px;
+    }
+
+    .modal-conteudo li {
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="tela-inicial" class="tela ativa">
+    <h1>Desafio das Letras</h1>
+    <div class="creditos">
+      Desenvolvido por Anderson Carvalho<br>
+      Contato: <a href="mailto:euconcego@gmail.com">euconcego@gmail.com</a>
+    </div>
+    
+    <div class="menu-botoes">
+      <button id="btn-jogar" class="btn-principal">Iniciar Partida</button>
+      <button id="btn-ajuda-menu" class="btn-secundario">Como Jogar</button>
+    </div>
+  </div>
+
+  <div id="tela-jogo" class="tela">
+    <div class="painel-topo">
+      <div class="placar" aria-live="polite">Pontos: <span id="pontos">0</span></div>
+      <div class="botoes-topo">
+        <button id="btn-ajuda-jogo" class="btn-icone" aria-label="Abrir ajuda">Ajuda</button>
+      </div>
+    </div>
+
+    <div id="feedback" class="feedback" aria-live="assertive"></div>
+
+    <table id="tabuleiro" role="grid" aria-label="Tabuleiro de deslizar letras"></table>
+
+    <div class="menu-botoes" style="margin-top: 20px;">
+      <button id="btn-validar" class="btn-principal">Validar Palavras</button>
+      <button id="btn-resetar" class="btn-secundario">Resetar Tabuleiro</button>
+      <button id="btn-voltar" class="btn-secundario">Voltar ao Menu</button>
+    </div>
+  </div>
+
+  <div id="modal-ajuda" class="modal" role="dialog" aria-labelledby="titulo-ajuda" aria-modal="true">
+    <div class="modal-conteudo">
+      <h2 id="titulo-ajuda">Como Jogar</h2>
+      <ul>
+        <li>O tabuleiro contém 15 letras e um espaço vazio.</li>
+        <li>Toque ou ative uma letra ao lado do espaço vazio para fazê-la deslizar.</li>
+        <li>Forme palavras na horizontal ou vertical e use o botão <strong>"Validar Palavras"</strong> para pontuar.</li>
+        <li>Se o tabuleiro estiver difícil ou com letras ruins, use o botão <strong>"Resetar Tabuleiro"</strong> para reembaralhar.</li>
+      </ul>
+      <button id="btn-fechar-ajuda" class="btn-principal">Entendi</button>
+    </div>
+  </div>
+
+  <script>
+    let pontuacao = 0;
+    const TAMANHO = 4;
+    let tabuleiro = [];
+    let linhaVazio = 3;
+    let colunaVazio = 3;
+    
+    let audioIniciado = false;
+    let audioCtx;
+
+    const LETRAS = ["A","A","A","B","C","D","E","E","F","G","H","I","I","J","L","M","N","O","O","P","Q","R","R","S","S","T","U","V","X","Z"];
+
+    function inicializarAudio() {
+      if (!audioIniciado) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        audioIniciado = true;
+      } else if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function tocarSom(tipo) {
+      if (!audioIniciado || audioCtx.state === 'suspended') return;
+      
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      const agora = audioCtx.currentTime;
+
+      if (tipo === 'deslizar') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(280, agora);
+        osc.frequency.exponentialRampToValueAtTime(540, agora + 0.08);
+        gain.gain.setValueAtTime(0.25, agora);
+        gain.gain.linearRampToValueAtTime(0, agora + 0.08);
+        osc.start(agora); osc.stop(agora + 0.08);
+      } 
+      else if (tipo === 'erro-movimento') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(130, agora);
+        gain.gain.setValueAtTime(0.35, agora);
+        gain.gain.linearRampToValueAtTime(0, agora + 0.12);
+        osc.start(agora); osc.stop(agora + 0.12);
+      } 
+      else if (tipo === 'acerto') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, agora);
+        osc.frequency.setValueAtTime(659.25, agora + 0.06);
+        osc.frequency.setValueAtTime(783.99, agora + 0.12);
+        gain.gain.setValueAtTime(0.25, agora);
+        gain.gain.linearRampToValueAtTime(0, agora + 0.3);
+        osc.start(agora); osc.stop(agora + 0.3);
+      } 
+      else if (tipo === 'erro-validacao') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(180, agora);
+        gain.gain.setValueAtTime(0.18, agora);
+        gain.gain.linearRampToValueAtTime(0, agora + 0.2);
+        osc.start(agora); osc.stop(agora + 0.2);
+      }
+    }
+
+    function iniciarPartida() {
+      let poolLetras = [...LETRAS];
+      let letrasSorteadas = [];
+
+      for (let i = 0; i < 15; i++) {
+        const indice = Math.floor(Math.random() * poolLetras.length);
+        letrasSorteadas.push(poolLetras.splice(indice, 1)[0]);
+      }
+      
+      letrasSorteadas.push("");
+
+      for (let i = letrasSorteadas.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [letrasSorteadas[i], letrasSorteadas[j]] = [letrasSorteadas[j], letrasSorteadas[i]];
+      }
+
+      tabuleiro = [];
+      for (let i = 0; i < TAMANHO; i++) {
+        let linha = letrasSorteadas.slice(i * TAMANHO, (i + 1) * TAMANHO);
+        tabuleiro.push(linha);
+        
+        let colVazio = linha.indexOf("");
+        if (colVazio !== -1) {
+          linhaVazio = i;
+          colunaVazio = colVazio;
+        }
+      }
+      
+      desenharTabuleiro();
+    }
+
+    function desenharTabuleiro(idParaFocar = null) {
+      const tabela = document.getElementById("tabuleiro");
+      tabela.innerHTML = "";
+
+      for (let l = 0; l < TAMANHO; l++) {
+        const linhaEl = document.createElement("tr");
+        for (let c = 0; c < TAMANHO; c++) {
+          const celulaEl = document.createElement("td");
+          const botao = document.createElement("button");
+          const valor = tabuleiro[l][c];
+          botao.textContent = valor;
+          
+          botao.id = `peca-${l}-${c}`;
+
+          if (valor === "") {
+            botao.className = "peca vazio";
+            botao.setAttribute("aria-label", `Espaço vazio na linha ${l + 1}, coluna ${c + 1}`);
+          } else {
+            botao.className = "peca";
+            botao.setAttribute("aria-label", `Letra ${valor}. Posição linha ${l + 1}, coluna ${c + 1}`);
+            botao.onclick = () => moverPeca(l, c);
+          }
+
+          celulaEl.appendChild(botao);
+          linhaEl.appendChild(celulaEl);
+        }
+        tabela.appendChild(linhaEl);
+      }
+
+      if (idParaFocar) {
+        const elementoAlvo = document.getElementById(idParaFocar);
+        if (elementoAlvo) elementoAlvo.focus();
+      }
+    }
+
+    function moverPeca(l, c) {
+      const difL = Math.abs(l - linhaVazio);
+      const difC = Math.abs(c - colunaVazio);
+
+      if ((difL === 1 && difC === 0) || (difL === 0 && difC === 1)) {
+        let antigaLinhaVazio = linhaVazio;
+        let antigaColunaVazio = colunaVazio;
+
+        tabuleiro[linhaVazio][colunaVazio] = tabuleiro[l][c];
+        tabuleiro[l][c] = "";
+        linhaVazio = l; colunaVazio = c;
+        
+        tocarSom('deslizar');
+        
+        desenharTabuleiro(`peca-${antigaLinhaVazio}-${antigaColunaVazio}`);
+        document.getElementById("feedback").textContent = "";
+      } else {
+        tocarSom('erro-movimento');
+        document.getElementById("feedback").textContent = "Movimento inválido. Escolha uma peça adjacente ao espaço vazio.";
+      }
+    }
+
+    async function validarTabuleiro() {
+      document.getElementById("feedback").textContent = "Validando palavras...";
+      let palavrasEncontradas = [];
+
+      for (let l = 0; l < TAMANHO; l++) {
+        let palavra = tabuleiro[l].join("").trim();
+        if (palavra.length >= 3) palavrasEncontradas.push({ texto: palavra, tipo: 'linha', indice: l });
+      }
+
+      for (let c = 0; c < TAMANHO; c++) {
+        let palavra = "";
+        for (let l = 0; l < TAMANHO; l++) { palavra += tabuleiro[l][c]; }
+        palavra = palavra.trim();
+        if (palavra.length >= 3) palavrasEncontradas.push({ texto: palavra, tipo: 'coluna', indice: c });
+      }
+
+      if (palavrasEncontradas.length === 0) {
+        tocarSom('erro-validacao');
+        document.getElementById("feedback").textContent = "Nenhuma sequência de 3 ou mais letras encontrada.";
+        desenharTabuleiro(`peca-${linhaVazio}-${colunaVazio}`);
+        return; 
+      }
+
+      let acertouAlguma = false;
+
+      for (let p of palavrasEncontradas) {
+        try {
+          const existe = await checarPalavraAPI(p.texto);
+          if (existe) {
+            acertouAlguma = true;
+            const pontosGanhos = p.texto.length * 10;
+            pontuacao += pontosGanhos;
+            document.getElementById("pontos").textContent = pontuacao;
+            destacarAcerto(p.tipo, p.indigo = p.indice);
+            document.getElementById("feedback").textContent = `Palavra ${p.texto} validada! +${pontosGanhos} pontos!`;
+          }
+        } catch (erro) {
+          console.error("Erro ao validar palavra na API:", erro);
+        }
+      }
+
+      if (acertouAlguma) {
+        tocarSom('acerto');
+      } else {
+        tocarSom('erro-validacao');
+        document.getElementById("feedback").textContent = "Nenhuma palavra válida encontrada no dicionário.";
+        desenharTabuleiro(`peca-${linhaVazio}-${colunaVazio}`);
+      }
+    }
+
+    async function checarPalavraAPI(palavra) {
+      try {
+        const resposta = await fetch(`https://dicio-api-caioanderson.vercel.app/api/v2/${palavra.toLowerCase()}`);
+        return resposta.status === 200;
+      } catch (e) { return false; }
+    }
+
+    function destacarAcerto(tipo, indice) {
+      const tabela = document.getElementById("tabuleiro");
+      if (tipo === 'linha') {
+        for (let celula of tabela.rows[indice].cells) { celula.firstChild.classList.add("validada"); }
+      } else {
+        for (let l = 0; l < TAMANHO; l++) { tabela.rows[l].cells[indice].firstChild.classList.add("validada"); }
+      }
+      setTimeout(() => { desenharTabuleiro(); }, 1000);
+    }
+
+    function alternarTela(daqui, para) {
+      document.getElementById(daqui).classList.remove("ativa");
+      document.getElementById(para).classList.add("ativa");
+    }
+
+    function abrirAjuda() { document.getElementById("modal-ajuda").style.display = "flex"; }
+    function fecharAjuda() { document.getElementById("modal-ajuda").style.display = "none"; }
+
+    // Eventos
+    document.getElementById("btn-jogar").onclick = () => {
+      inicializarAudio();
+      alternarTela("tela-inicial", "tela-jogo");
+      iniciarPartida();
+    };
+    
+    document.getElementById("btn-voltar").onclick = () => {
+      alternarTela("tela-jogo", "tela-inicial");
+    };
+
+    document.getElementById("btn-resetar").onclick = () => {
+      iniciarPartida();
+      document.getElementById("feedback").textContent = "Tabuleiro reembaralhado!";
+      tocarSom('deslizar');
+    };
+
+    document.getElementById("btn-ajuda-menu").onclick = abrirAjuda;
+    document.getElementById("btn-ajuda-jogo").onclick = abrirAjuda;
+    document.getElementById("btn-fechar-ajuda").onclick = fecharAjuda;
+    document.getElementById("btn-validar").onclick = validarTabuleiro;
+  </script>
+</body>
+</html>
