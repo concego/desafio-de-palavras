@@ -16,7 +16,7 @@ O grande diferencial deste projeto é o foco em **acessibilidade digital (a11y)*
 
 ---
 
-## ♿ Recursos de Acessibilidade Implementados
+## Recursos de Acessibilidade Implementados
 
 Este projeto foi desenhado sob os padrões da **WCAG (Web Content Accessibility Guidelines)** e inclui:
 
